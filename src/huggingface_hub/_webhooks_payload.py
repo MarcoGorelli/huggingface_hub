@@ -13,12 +13,14 @@
 # limitations under the License.
 """Contains data structures to parse the webhooks payload."""
 
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from .utils import is_pydantic_available
 
 
-if is_pydantic_available():
+if TYPE_CHECKING:
+    from pydantic import BaseModel
+elif is_pydantic_available():
     from pydantic import BaseModel
 else:
     # Define a dummy BaseModel to avoid import errors when pydantic is not installed

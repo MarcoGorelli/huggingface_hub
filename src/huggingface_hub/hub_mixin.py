@@ -285,11 +285,11 @@ class ModelHubMixin:
         - If `config` is passed as a dataclass, set it as `self._hub_mixin_config`.
         - Otherwise, build `self._hub_mixin_config` from default values and passed values.
         """
-        instance = super().__new__(cls)
+        instance = super().__new__(cls)  # pyrefly: ignore[bad-argument-type]
 
         # If `config` is already set, return early
         if instance._hub_mixin_config is not None:
-            return instance
+            return instance  # pyrefly: ignore[bad-return]
 
         # Infer passed values
         passed_values = {
@@ -306,8 +306,8 @@ class ModelHubMixin:
 
         # If config passed as dataclass => set it and return early
         if is_dataclass(passed_values.get("config")):
-            instance._hub_mixin_config = passed_values["config"]
-            return instance
+            instance._hub_mixin_config = passed_values["config"]  # pyrefly: ignore[bad-assignment]
+            return instance  # pyrefly: ignore[bad-return]
 
         # Otherwise, build config from default + passed values
         init_config = {
@@ -329,7 +329,7 @@ class ModelHubMixin:
         # Set `config` attribute and return
         if init_config != {}:
             instance._hub_mixin_config = init_config
-        return instance
+        return instance  # pyrefly: ignore[bad-return]
 
     @classmethod
     def _is_jsonable(cls, value: Any) -> bool:

@@ -164,7 +164,7 @@ class Output:
         """
         if dataclasses.is_dataclass(data) and not isinstance(data, type):
             data = _dataclass_to_dict(data)
-        if self.mode == OutputFormat.quiet and id_key is not None:
+        if self.mode == OutputFormat.quiet and id_key is not None and isinstance(data, dict):
             _print_flush(data.get(id_key, ""))
             return
         indent = 2 if self.mode == OutputFormat.human else None

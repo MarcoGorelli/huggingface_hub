@@ -300,7 +300,10 @@ def _pixels_to_lines(buf: list[list[Color | None]]) -> list[str]:
             elif top:
                 nfg, nbg, ch = top, None, "▀"
             else:
-                nfg, nbg, ch = bot, None, "▄"  # type: ignore[assignment]
+                # `top` is falsy here (none of the branches above matched), and the guard at the top of
+                # the loop already ruled out `not top and not bot`, so `bot` must be truthy.
+                assert bot is not None
+                nfg, nbg, ch = bot, None, "▄"
 
             esc = ""
             if nfg != cfg:

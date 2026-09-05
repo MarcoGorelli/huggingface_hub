@@ -855,7 +855,7 @@ class HfFileSystem(fsspec.AbstractFileSystem, metaclass=_Cached):  # ty: ignore[
                     case (bucket_id, None):
                         self._invalidate_bucket_tree(bucket_id)
                     case (bucket_id, changes):
-                        self._apply_bucket_changes(bucket_id, changes)
+                        self._apply_bucket_changes(bucket_id, changes)  # pyrefly: ignore[bad-argument-type]
 
         out = []
         if path in self.dircache and not refresh:

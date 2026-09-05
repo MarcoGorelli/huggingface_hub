@@ -14581,7 +14581,7 @@ class HfApi:
 
             def _download_and_collect(item: tuple[str, str]) -> None:
                 file_path, target_path = item
-                local_path = self.hf_hub_download(
+                local_path = self.hf_hub_download(  # pyrefly: ignore[no-matching-overload]
                     repo_id=source.id,
                     repo_type=source.type,
                     filename=file_path,

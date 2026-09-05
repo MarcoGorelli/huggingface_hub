@@ -634,7 +634,7 @@ def HFCliCommand(topic: TOPIC_T, examples: list[str] | None = None) -> type[HfCo
             if any(isinstance(p, click.Argument) and p.required for p in self.params):
                 click.echo(ctx.get_help(), color=ctx.color)
                 ctx.exit()
-        return HfCommand.parse_args(self, ctx, args)
+        return HfCommand.parse_args(self, ctx, args)  # pyrefly: ignore[bad-argument-type]
 
     return type(
         f"HfCommand{topic.capitalize()}",
