@@ -627,14 +627,14 @@ def HFCliCommand(topic: TOPIC_T, examples: list[str] | None = None) -> type[HfCo
             return
         _format_formatting_options_section(formatter)
 
-    def parse_args(self: click.Command, ctx: click.Context, args: list[str]) -> list[str]:
+    def parse_args(self: HfCommand, ctx: click.Context, args: list[str]) -> list[str]:
         # Show help when a command with required arguments is invoked without any args
         # (mirrors group behavior: `hf jobs` prints help, so `hf download` should too).
         if not args and not ctx.resilient_parsing:
             if any(isinstance(p, click.Argument) and p.required for p in self.params):
                 click.echo(ctx.get_help(), color=ctx.color)
                 ctx.exit()
-        return HfCommand.parse_args(self, ctx, args)  # pyrefly: ignore[bad-argument-type]
+        return HfCommand.parse_args(self, ctx, args)
 
     return type(
         f"HfCommand{topic.capitalize()}",

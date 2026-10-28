@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, ClassVar, Protocol, TypeVar, cast
 
 import packaging.version
+from typing_extensions import Self
 
 from . import constants
 from .errors import EntryNotFoundError, HfHubHTTPError
@@ -277,7 +278,7 @@ class ModelHubMixin:
         }
         cls._hub_mixin_inject_config = "config" in inspect.signature(cls._from_pretrained).parameters
 
-    def __new__(cls: type[T], *args, **kwargs) -> T:
+    def __new__(cls, *args, **kwargs) -> Self:
         """Create a new instance of the class and handle config.
 
         3 cases:
@@ -285,11 +286,11 @@ class ModelHubMixin:
         - If `config` is passed as a dataclass, set it as `self._hub_mixin_config`.
         - Otherwise, build `self._hub_mixin_config` from default values and passed values.
         """
-        instance = super().__new__(cls)  # pyrefly: ignore[bad-argument-type]
+        instance = super().__new__(cls)
 
         # If `config` is already set, return early
         if instance._hub_mixin_config is not None:
-            return instance  # pyrefly: ignore[bad-return]
+            return instance
 
         # Infer passed values
         passed_values = {
@@ -305,9 +306,9 @@ class ModelHubMixin:
         }
 
         # If config passed as dataclass => set it and return early
-        if is_dataclass(passed_values.get("config")):
-            instance._hub_mixin_config = passed_values["config"]  # pyrefly: ignore[bad-assignment]
-            return instance  # pyrefly: ignore[bad-return]
+        if is_dataclass(config := passed_values.get("config")) and not isinstance(config, type):
+            instance._hub_mixin_config = config
+            return instance
 
         # Otherwise, build config from default + passed values
         init_config = {
@@ -329,7 +330,7 @@ class ModelHubMixin:
         # Set `config` attribute and return
         if init_config != {}:
             instance._hub_mixin_config = init_config
-        return instance  # pyrefly: ignore[bad-return]
+        return instance
 
     @classmethod
     def _is_jsonable(cls, value: Any) -> bool:

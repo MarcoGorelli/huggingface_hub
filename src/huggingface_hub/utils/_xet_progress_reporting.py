@@ -91,6 +91,8 @@ class XetDownloadProgressReporter:
             getattr(cls, "update_transfer", None)
         )
 
+        # Duck-typed: a tqdm, an external bar, or an `_AggregatedTqdm` exposing `update_transfer`.
+        self.reconstruction_bar: Any
         if external_reconstruction_bar is not None:
             self.reconstruction_bar = external_reconstruction_bar
             self._owns_reconstruction_bar = False
@@ -148,10 +150,8 @@ class XetDownloadProgressReporter:
 
         if transfer_inc > 0 and self.transfer_bar is not None:
             if self._aggregated:
-                # `self._aggregated` guarantees `reconstruction_bar` is actually the `_AggregatedTqdm`
-                # subclass that defines these, but that's a runtime-only invariant.
-                self.reconstruction_bar.update_transfer(transfer_inc)  # pyrefly: ignore[missing-attribute]
-                self.reconstruction_bar.set_transfer_postfix_str(  # pyrefly: ignore[missing-attribute]
+                self.reconstruction_bar.update_transfer(transfer_inc)
+                self.reconstruction_bar.set_transfer_postfix_str(
                     _format_speed_postfix(group_report.total_transfer_bytes_completion_rate), refresh=False
                 )
             else:

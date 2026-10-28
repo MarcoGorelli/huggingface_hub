@@ -851,11 +851,11 @@ class HfFileSystem(fsspec.AbstractFileSystem, metaclass=_Cached):  # ty: ignore[
         if self.live_follow and isinstance(resolved_path, HfFileSystemResolvedBucketPath):
             self._ensure_bucket_follower(resolved_path.bucket_id)
             while self._pending_bucket_changes:
-                match self._pending_bucket_changes.popleft():
-                    case (bucket_id, None):
-                        self._invalidate_bucket_tree(bucket_id)
-                    case (bucket_id, changes):
-                        self._apply_bucket_changes(bucket_id, changes)  # pyrefly: ignore[bad-argument-type]
+                bucket_id, changes = self._pending_bucket_changes.popleft()
+                if changes is None:
+                    self._invalidate_bucket_tree(bucket_id)
+                else:
+                    self._apply_bucket_changes(bucket_id, changes)
 
         out = []
         if path in self.dircache and not refresh:
