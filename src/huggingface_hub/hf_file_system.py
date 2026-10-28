@@ -851,11 +851,13 @@ class HfFileSystem(fsspec.AbstractFileSystem, metaclass=_Cached):  # ty: ignore[
         if self.live_follow and isinstance(resolved_path, HfFileSystemResolvedBucketPath):
             self._ensure_bucket_follower(resolved_path.bucket_id)
             while self._pending_bucket_changes:
-                bucket_id, changes = self._pending_bucket_changes.popleft()
-                if changes is None:
-                    self._invalidate_bucket_tree(bucket_id)
-                else:
-                    self._apply_bucket_changes(bucket_id, changes)
+                match self._pending_bucket_changes.popleft():
+                    case (bucket_id, None):
+                        self._invalidate_bucket_tree(bucket_id)
+                    case (bucket_id, changes):
+                        # pyrefly doesn't narrow tuple sub-patterns after a failed case:
+                        # https://github.com/facebook/pyrefly/issues/5340
+                        self._apply_bucket_changes(bucket_id, changes)  # pyrefly: ignore[bad-argument-type]
 
         out = []
         if path in self.dircache and not refresh:
